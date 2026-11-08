@@ -3,3 +3,9 @@ body {
   height: 100%;
   margin: 0;
 }
+
+/* The map fills the whole window. */
+arcgis-map {
+  display: block;
+  height: 100%;
+}
