@@ -221,3 +221,6 @@ __marimo__/
 
 # GDAL/QGIS stats sidecar files
 *.aux.xml
+
+# Node (web viewer)
+node_modules/
