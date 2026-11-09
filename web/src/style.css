@@ -9,3 +9,44 @@ arcgis-map {
   display: block;
   height: 100%;
 }
+
+#panel {
+  width: 260px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 12px;
+  background: white;
+  font: 14px sans-serif;
+}
+
+#panel label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+#panel input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#error {
+  margin: 8px 0 0;
+  color: #c00000;
+}
+
+#results {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+}
+
+#results td {
+  padding: 2px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Second column: the values. */
+#results td + td {
+  text-align: right;
+}
