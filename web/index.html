@@ -8,6 +8,20 @@
   <body>
     <arcgis-map id="map">
       <arcgis-zoom slot="top-left"></arcgis-zoom>
+      <arcgis-sketch
+        slot="top-right"
+        creation-mode="single"
+        default-graphics-layer-disabled
+        update-on-graphic-click-disabled
+        hide-create-tools-point
+        hide-create-tools-polyline
+        hide-create-tools-rectangle
+        hide-create-tools-circle
+        hide-selection-tools-lasso-selection
+        hide-selection-tools-rectangle-selection
+        hide-undo-redo-menu
+        hide-settings-menu
+      ></arcgis-sketch>
     </arcgis-map>
     <script type="module" src="/src/main.ts"></script>
   </body>

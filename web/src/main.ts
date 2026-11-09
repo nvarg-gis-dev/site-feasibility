@@ -1,12 +1,14 @@
 import "./style.css";
 
-// Registers the <arcgis-map> and <arcgis-zoom> custom elements used in index.html.
+// Registers the custom elements used in index.html.
 import "@arcgis/map-components/components/arcgis-map";
+import "@arcgis/map-components/components/arcgis-sketch";
 import "@arcgis/map-components/components/arcgis-zoom";
 
 import Basemap from "@arcgis/core/Basemap";
 import Graphic from "@arcgis/core/Graphic";
 import Polygon from "@arcgis/core/geometry/Polygon";
+import { webMercatorToGeographic } from "@arcgis/core/geometry/support/webMercatorUtils";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import OpenStreetMapLayer from "@arcgis/core/layers/OpenStreetMapLayer";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
@@ -33,6 +35,19 @@ const coverageGraphic = new Graphic({
   }),
 });
 
+// The shape the API expects: PolygonGeoJSON in app/models/schemas.py.
+interface PolygonGeoJSON {
+  type: "Polygon";
+  coordinates: number[][][];
+}
+
+// The map draws in Web Mercator; the API wants [lon, lat]. ArcGIS rings are
+// already closed, as GeoJSON requires.
+function toGeoJSON(geometry: Polygon): PolygonGeoJSON {
+  const lonLat = webMercatorToGeographic(geometry) as Polygon;
+  return { type: "Polygon", coordinates: lonLat.rings };
+}
+
 const mapElement = document.querySelector("arcgis-map")!;
 
 // An OpenStreetMap layer as the basemap: no ArcGIS API key needed.
@@ -43,5 +58,34 @@ await mapElement.viewOnReady();
 const coverageLayer = new GraphicsLayer({ title: "DEM coverage" });
 coverageLayer.add(coverageGraphic);
 mapElement.map?.add(coverageLayer);
+
+const parcelLayer = new GraphicsLayer({ title: "Parcel" });
+mapElement.map?.add(parcelLayer);
+
+const sketchElement = document.querySelector("arcgis-sketch")!;
+sketchElement.layer = parcelLayer;
+
+let parcelGraphic: Graphic | null = null;
+let parcelPolygon: PolygonGeoJSON | null = null;
+
+sketchElement.addEventListener("arcgisCreate", (event) => {
+  const { state, graphic } = event.detail;
+
+  // A new drawing replaces the previous one: at most one polygon exists.
+  if (state === "start") {
+    if (parcelGraphic) {
+      parcelLayer.remove(parcelGraphic);
+    }
+    parcelGraphic = null;
+    parcelPolygon = null;
+  }
+
+  if (state === "complete" && graphic) {
+    parcelGraphic = graphic;
+    parcelPolygon = toGeoJSON(graphic.geometry as Polygon);
+    // Temporary until step 5 sends this to the API.
+    console.log("Parcel GeoJSON:", parcelPolygon);
+  }
+});
 
 await mapElement.goTo(coverageGraphic);
