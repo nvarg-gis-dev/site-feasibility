@@ -16,3 +16,18 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: pytest -v
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"  # matches local Node v26.13.0
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build  # runs tsc first, so type errors fail CI

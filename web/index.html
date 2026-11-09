@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Site Feasibility Viewer</title>
+  </head>
+  <body>
+    <arcgis-map id="map">
+      <arcgis-zoom slot="top-left"></arcgis-zoom>
+      <arcgis-sketch
+        slot="top-right"
+        creation-mode="single"
+        default-graphics-layer-disabled
+        update-on-graphic-click-disabled
+        hide-create-tools-point
+        hide-create-tools-polyline
+        hide-create-tools-rectangle
+        hide-create-tools-circle
+        hide-selection-tools-lasso-selection
+        hide-selection-tools-rectangle-selection
+        hide-undo-redo-menu
+        hide-settings-menu
+      ></arcgis-sketch>
+
+      <div id="panel" slot="bottom-left">
+        <label>
+          Platform elevation (m)
+          <input id="platform-elev" type="number" value="114.3" step="0.1" />
+        </label>
+        <label>
+          Unit cost (USD/m³)
+          <input id="unit-cost" type="number" value="8" min="0" step="0.5" />
+        </label>
+        <button id="run" type="button" disabled>Run analysis</button>
+        <p id="error"></p>
+        <table id="results"></table>
+      </div>
+    </arcgis-map>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

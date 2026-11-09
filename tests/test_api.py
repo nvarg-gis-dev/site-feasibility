@@ -73,3 +73,16 @@ def test_assessment_polygon_fully_outside_dem():
     response = client.post("/assessment", json={"polygon": FULLY_OUTSIDE_POLYGON})
     assert response.status_code == 422
     assert "fully inside" in response.json()["detail"].lower()
+
+
+def test_cors_allows_vite_dev_origin():
+    response = client.options(
+        "/assessment",
+        headers={
+            "Origin": "http://localhost:5173",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "Content-Type",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"

@@ -1,5 +1,7 @@
 # Site Feasibility API
 
+[![CI](https://github.com/nvarg-gis-dev/site-feasibility/actions/workflows/ci.yml/badge.svg)](https://github.com/nvarg-gis-dev/site-feasibility/actions/workflows/ci.yml)
+
 A preliminary site feasibility API: submit a parcel polygon and get back
 terrain stats, slope, and the cut/fill volume and cost to level the parcel
 to a target platform elevation.
@@ -20,6 +22,7 @@ flowchart LR
 - `app/services/dem.py` — loads the sample DEM once, reprojects the polygon, and clips the DEM to it.
 - `app/services/terrain.py` — pure NumPy math: elevation stats, slope, cut/fill volumes.
 - `data/sample_dem.tif` — the 30m elevation raster `dem.py` reads.
+- `web/` — browser viewer (Vite, TypeScript, ArcGIS Maps SDK for JavaScript) that draws a parcel and calls the API.
 
 ## Quick start
 
@@ -45,6 +48,32 @@ Run the tests:
 ```bash
 pytest -v
 ```
+
+## Web viewer
+
+Draw a parcel on the map and see its terrain stats, earthwork volumes and cost.
+
+![Web viewer showing a parcel drawn inside the DEM coverage area, with the analysis results in a side panel](docs/images/viewer.png)
+
+Start the API with either option above, then in another terminal:
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`. The API only accepts browser requests from that
+address (CORS), so keep the viewer on port 5173.
+
+The viewer calls `http://localhost:8000` by default. To use another API URL,
+copy `web/.env.example` to `web/.env` and change `VITE_API_BASE_URL`.
+
+To run an analysis:
+
+1. Click the polygon tool (top right) and draw a parcel inside the red rectangle, which marks the DEM coverage. Double-click to finish. Drawing a new parcel replaces the previous one.
+2. Set the platform elevation and unit cost.
+3. Click **Run analysis**.
 
 ## API
 
@@ -145,7 +174,7 @@ derivative):
 
 ## Roadmap
 
-- Web viewer (Vite + TypeScript + ArcGIS Maps SDK for JavaScript) to draw parcels interactively.
+- On-demand DEM: windowed reads from Copernicus COGs on AWS for any parcel.
 - PostGIS-backed storage for parcels and results.
 - Terraced/multi-level platforms instead of a single flat elevation.
 - Area-weighted (not whole-cell) clipping, to remove the volume overestimate.
